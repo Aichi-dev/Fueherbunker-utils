@@ -1,0 +1,171 @@
+# bot.py
+import os
+import discord
+import json
+
+
+admins = [356861941182103552] #356861941182103552 Aichi
+
+
+path = os.path.dirname(os.path.realpath(__file__))
+
+
+from discord.ext import commands
+from discord.ext import tasks
+
+from dotenv import load_dotenv
+from datetime import datetime
+
+
+
+
+load_dotenv()
+
+#TOKEN = os.getenv('TEST_DISCORD_TOKEN') #Test
+TOKEN = os.getenv('PROD_DISCORD_TOKEN') #Prod
+
+
+intents = discord.Intents.default()
+intents.members = True
+
+bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
+
+@bot.event
+async def on_ready():
+    print(f'{bot.user.name} IS AM START!')
+    await bot.change_presence(activity=discord.Game('w PP | fbhelp'))
+
+@bot.command(hidden=True)
+async def load(ctx, extension):
+    if ctx.author.id not in admins:
+        return
+    for filename in os.listdir(f'{path}/cogs'):
+        if filename.endswith('.py') and filename.startswith(f'{extension}'):
+            bot.load_extension(f'cogs.{filename[:-3]}')
+    return
+
+@bot.command(hidden=True)
+async def unload(ctx, extension):
+    if ctx.author.id not in admins:
+        return
+    for filename in os.listdir(f'{path}/cogs'):
+        if filename.endswith('.py') and filename.startswith(f'{extension}'):
+            bot.unload_extension(f'cogs.{filename[:-3]}')
+    return
+
+@bot.command(hidden=True)
+async def reload(ctx, extension):
+    if ctx.author.id not in admins:
+        return
+    for filename in os.listdir(f'{path}/cogs'):
+        if filename.endswith('.py') and filename.startswith(f'{extension}'):
+            bot.unload_extension(f'cogs.{filename[:-3]}')
+            bot.load_extension(f'cogs.{filename[:-3]}')
+    return
+
+
+
+# Webhook Commands
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    if message.guild == None and message.author != bot.user:
+        print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs \n{message.content} ')
+        return
+
+# Among Us Webhook Commands
+    if 'Among_Us' in bot.cogs.keys():
+        if message.content.startswith('amongmute ') or message.content.startswith('fbamongmute '):
+            if message.author == bot.user or message.guild == None : #or message.author.bot == False
+                return
+            print(f'{message.content}') # debug
+            #try to get channel
+            try:
+                voice_channel_id= int(message.content.split()[1])
+                voice_channel = message.guild.get_channel(voice_channel_id)
+                ids = list(voice_channel.voice_states.keys())
+            except Exception:
+                await message.channel.send(f'Please enter a Valid ID!')
+                return
+            if len(ids) >= 1:
+                with open(f'{path}/channels/{voice_channel_id}_{message.guild.id}','a') as fh:
+                    for id in ids:
+                        fh.write('%s\n' % id)
+                    fh.close()
+                for id in ids:
+                    member = message.guild.get_member(int(id))
+                    print(member)
+                    await member.edit(mute = True)
+                return
+
+        if message.content.startswith('amongunmute ') or message.content.startswith('fbamongunmute '):
+            if message.author == bot.user or message.guild == None : #or message.author.bot == False
+                return
+            try:
+                voice_channel_id= int(message.content.split()[1])
+            except Exception:
+                await message.channel.send(f'Please enter a Valid ID!')
+                return
+            #Read File with memberIDs
+            if not os.path.exists(f'{path}/channels/{voice_channel_id}_{message.guild.id}'):
+                print('no members were Muted in channel')
+                return
+            ids=[]
+            try:
+                with open(f'{path}/channels/{voice_channel_id}_{message.guild.id}','r') as fh:
+                    for line in fh:
+                        # remove linebreak which is the last character of the string
+                        currentPlace = line[:-1]
+                        if currentPlace not in ids:
+                            # add item to the list
+                            ids.append(currentPlace)
+                    print(ids)
+                    fh.close()
+            except Exception:
+                print('Error Reading File')
+                return
+            for id in ids:
+                member = message.guild.get_member(int(id))
+                await member.edit(mute = False)
+            os.remove(f'{path}/channels/{voice_channel_id}_{message.guild.id}')
+
+        if message.content.startswith('amongclear') or message.content.startswith('fbamongclear'):
+            if message.author == bot.user or message.guild == None or message.author.bot == True:
+                return
+            try:
+                for member in message.guild.members:
+                    if member.voice != None and member.voice.mute == True:
+                        await member.edit(mute = False)
+                for filename in os.listdir(f'{path}/channels'):
+                    if filename.endswith(f'{message.guild.id}'):
+                        os.remove(f'{path}/channels/{filename}')
+            except:
+                print('error')
+            return
+# End Amon Us Webhook Commands
+
+    await bot.process_commands(message)
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        if ctx.author.id in admins:
+            await ctx.command.reinvoke(ctx)
+        else:
+            await ctx.channel.send(f'You are on Cooldown, try again later :D')
+    elif isinstance(error,commands.MissingRequiredArgument):
+        await ctx.channel.send(f'Missing argument(s)! Command expects:\n{ctx.bot.command_prefix}{ctx.invoked_with} {ctx.command.signature}')
+    elif isinstance(error,commands.MemberNotFound):
+        await ctx.channel.send(f'Tag a valid member!')
+    else:
+        for admin in admins:
+            await bot.get_user(int(admin)).send(f'Unhandled error:{type(error)}\n{error.args[0]}\n\ntriggerd_by:\n{ctx.author}\n\nmessage:\n{ctx.message.content}')
+        raise error
+
+for filename in os.listdir(f'{path}/cogs'):
+    if filename.endswith('.py'):
+        bot.load_extension(f'cogs.{filename[:-3]}')
+
+bot.run(TOKEN)
