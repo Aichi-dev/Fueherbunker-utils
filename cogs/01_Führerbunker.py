@@ -20,9 +20,9 @@ async def wakeup_loop(self, ctx, user, count):
                 await ctx.channel.send(f'{user.mention} was awoken!')
                 return
         try:
-            await user.edit(voice_channel=afk)
-            await asyncio.sleep(1)
             await user.edit(voice_channel=wake_channel)
+            await asyncio.sleep(1)
+            await user.edit(voice_channel=afk)
             await asyncio.sleep(1)
         except:
             break
