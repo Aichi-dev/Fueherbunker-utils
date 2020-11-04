@@ -9,6 +9,7 @@ class Among_Us(commands.Cog):
         self.bot = bot
 
     @commands.command(name='among', brief='Start AmongUs game', help='Moves all members to AmongUs Channel')
+    @commands.cooldown(1, 600, type=commands.BucketType.user)
     async def among(self, ctx):
         if ctx.author == self.bot.user or ctx.guild == None:
             return

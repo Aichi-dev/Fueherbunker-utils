@@ -53,7 +53,8 @@ class Führerbunker(commands.Cog):
     @commands.command(name='frieden',aliases=['friedenstreppe'],brief='Start Friedenstreppe', help='Move both mentioned members to Friedenstreppe Voice Channel\ncooldown= 2 uses per 300sec')
     @commands.cooldown(1,300,type=commands.BucketType.user)
     async def frieden(self, ctx, user1 : discord.Member, user2 : discord.Member ):
-        if ctx.author == self.bot.user or ctx.guild.id != 356860732652126220:
+        if user1.voice == None or user2.voice == None:
+            await ctx.channel.send{f'both users need to be connected to voice!'}
             return
         await user1.edit(voice_channel=self.bot.get_channel(772079329819623445))
         await user2.edit(voice_channel=self.bot.get_channel(772079329819623445))
@@ -63,6 +64,10 @@ class Führerbunker(commands.Cog):
     @commands.cooldown(2,120,type=commands.BucketType.user)
     async def HoizMeih(self, ctx, user : discord.Member):
         if ctx.author == self.bot.user or ctx.guild == None:
+            return
+        if user.voice == None:
+            await ctx.channel.send(f'user not connected to voice')
+            ctx.command.reset_cooldown(ctx)
             return
         await user.edit(mute=True)
         await ctx.channel.send(f'A ruah is jetzt amoi!\n{user.mention} was muted for 30sec')
@@ -83,11 +88,15 @@ class Führerbunker(commands.Cog):
     @commands.command(name='wakeup',aliases=['wake'],brief='Try to wake user from mute xD',help='Moves Called member between afk and your Voice Channel like x number of times def is 5 \nonly works if user is connected to a Voice Channel\ncooldown=2 uses per 300sec')
     @commands.cooldown(2,120,type=commands.BucketType.user)
     async def wakeup(self,ctx, user : discord.Member, count : int  = 3):
-            if count >= 100:
-                count = 5
+            if count > 100:
+                count = 3
                 await ctx.channel.send(f'requested count exceeds max amount')
+                ctx.command.reset_cooldown(ctx)
+                return
             if ctx.author.voice == None or user.voice == None:
                 await ctx.channel.send(f'both users need to be connected to voice ')
+                ctx.command.reset_cooldown(ctx)
+                return
             self.bot.loop.create_task(wakeup_loop(self,ctx,user,count))
             return
 

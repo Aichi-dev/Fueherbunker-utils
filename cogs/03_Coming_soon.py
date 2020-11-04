@@ -27,7 +27,7 @@ class coming_soon(commands.Cog):
         if ctx.author == self.bot.user or ctx.guild == None:
             return
 
-    @commands.command(name='tour',help='show the whole discord to user',brief='Short discord Tour')
+    @commands.command(name='tour',help='show the whole discord to user with a short break',brief='Short discord Tour w break')
     @commands.cooldown(1,300,type=commands.BucketType.guild)
     async def Tour(self, ctx, user : discord.Member):
         if user.voice == None or ctx.author.voice == None:
