@@ -31,7 +31,8 @@ class coming_soon(commands.Cog):
     @commands.cooldown(1,300,type=commands.BucketType.guild)
     async def Tour(self, ctx, user : discord.Member):
         if user.voice == None or ctx.author.voice == None:
-            ctx.channel.send(f'both users need to be connected to voice')
+            ctx.command.reset_cooldown(ctx)
+            await ctx.channel.send(f'both users need to be connected to voice')
             return
         self.bot.loop.create_task(discord_tour(self, ctx, user))
         return
