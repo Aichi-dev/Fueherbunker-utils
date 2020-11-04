@@ -11,11 +11,11 @@ async def wakeup_loop(self, ctx, user, count):
     afk = ctx.author.voice.channel.guild.afk_channel
     wake_channel = ctx.guild.get_channel(772940637599301652)
     dest = ctx.author.voice.channel
-    current_state = (f'{user.voice.self_deaf}',f'{user.voice.self_mute}')
+    current_state = (f'{user.voice.self_deaf}',f'{user.voice.self_mute}',f'{user.voice.afk}')
     i = 0
     while i < count:
         i = i + 1
-        if current_state != (f'{ctx.guild.get_member(user.id).voice.self_deaf}',f'{ctx.guild.get_member(user.id).voice.self_mute}'):
+        if current_state != (f'{ctx.guild.get_member(user.id).voice.self_deaf}',f'{ctx.guild.get_member(user.id).voice.self_mute}',f'{user.voice.afk}'):
                 await user.edit(voice_channel=dest)
                 await ctx.channel.send(f'{user.mention} was awoken!')
                 return
@@ -28,6 +28,15 @@ async def wakeup_loop(self, ctx, user, count):
             break
     await user.edit(voice_channel=dest)
     await ctx.channel.send(f'No response was triggered good luck!')
+
+async def discord_tour(self, ctx, user):
+    dest = ctx.author.voice.channel
+    for channel in ctx.guild.voice_channels:
+        await user.edit(voice_channel=channel)
+        await asyncio.sleep(0.2)
+        if ctx.guild.get_member(user.id).voice == None:
+            return
+    await user.edit(voice_channel=dest)
 
 class Führerbunker(commands.Cog):
 
@@ -97,9 +106,22 @@ class Führerbunker(commands.Cog):
                 await ctx.channel.send(f'both users need to be connected to voice ')
                 ctx.command.reset_cooldown(ctx)
                 return
-            self.bot.loop.create_task(wakeup_loop(self,ctx,user,count))
+            if user.voice.channel == ctx.guild.afk_channel or user.voice.afk == True or (user.voice.self_deaf == True and user.voice.self_mute == True):
+                self.bot.loop.create_task(wakeup_loop(self,ctx,user,count))
+            else:
+                await ctx.channel.send(f'User voice not in right state\naka. Abuse Protection')
             return
 
+
+    @commands.command(name='tour',help='show the whole discord to user with a short break',brief='Short discord Tour w break')
+    @commands.cooldown(1,300,type=commands.BucketType.guild)
+    async def Tour(self, ctx, user : discord.Member):
+        if user.voice == None or ctx.author.voice == None:
+            ctx.command.reset_cooldown(ctx)
+            await ctx.channel.send(f'both users need to be connected to voice')
+            return
+        self.bot.loop.create_task(discord_tour(self, ctx, user))
+        return
 
 
     @tasks.loop(seconds=10)
