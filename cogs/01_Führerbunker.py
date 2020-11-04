@@ -81,9 +81,9 @@ class Führerbunker(commands.Cog):
         return
 
     @commands.command(name='wakeup',aliases=['wake'],brief='Try to wake user from mute xD',help='Moves Called member between afk and your Voice Channel like x number of times def is 5 \nonly works if user is connected to a Voice Channel\ncooldown=2 uses per 300sec')
-    @commands.cooldown(2,300,type=commands.BucketType.user)
+    @commands.cooldown(2,120,type=commands.BucketType.user)
     async def wakeup(self,ctx, user : discord.Member, count : int  = 3):
-            if count >= 11:
+            if count >= 100:
                 count = 5
                 await ctx.channel.send(f'requested count exceeds max amount')
             if ctx.author.voice == None or user.voice == None:
