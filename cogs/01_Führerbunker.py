@@ -54,7 +54,7 @@ class Führerbunker(commands.Cog):
     @commands.cooldown(1,300,type=commands.BucketType.user)
     async def frieden(self, ctx, user1 : discord.Member, user2 : discord.Member ):
         if user1.voice == None or user2.voice == None:
-            await ctx.channel.send{f'both users need to be connected to voice!'}
+            await ctx.channel.send(f'both users need to be connected to voice!')
             return
         await user1.edit(voice_channel=self.bot.get_channel(772079329819623445))
         await user2.edit(voice_channel=self.bot.get_channel(772079329819623445))

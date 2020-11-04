@@ -21,7 +21,6 @@ class coming_soon(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
     @commands.command(name='Suggestions_plz', help='in desperate need :)')
     async def Suggestions_plz(self, ctx):
         if ctx.author == self.bot.user or ctx.guild == None:
