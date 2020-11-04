@@ -11,11 +11,11 @@ async def wakeup_loop(self, ctx, user, count):
     afk = ctx.author.voice.channel.guild.afk_channel
     wake_channel = ctx.guild.get_channel(772940637599301652)
     dest = ctx.author.voice.channel
-    current_state = (f'{user.voice.self_deaf}',f'{user.voice.self_mute}',f'{user.voice.afk}')
+    current_state = (f'{user.voice.self_deaf}',f'{user.voice.self_mute}')
     i = 0
     while i < count:
         i = i + 1
-        if current_state != (f'{ctx.guild.get_member(user.id).voice.self_deaf}',f'{ctx.guild.get_member(user.id).voice.self_mute}',f'{user.voice.afk}'):
+        if current_state != (f'{ctx.guild.get_member(user.id).voice.self_deaf}',f'{ctx.guild.get_member(user.id).voice.self_mute}'):
                 await user.edit(voice_channel=dest)
                 await ctx.channel.send(f'{user.mention} was awoken!')
                 return
