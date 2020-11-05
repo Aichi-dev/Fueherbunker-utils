@@ -24,9 +24,6 @@ from discord.ext import tasks
 from dotenv import load_dotenv
 from datetime import datetime
 
-
-
-
 load_dotenv()
 
 #TOKEN = os.getenv('TEST_DISCORD_TOKEN') #Test
