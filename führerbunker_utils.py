@@ -3,11 +3,13 @@ import os
 import discord
 import json
 
-
-admins = [356861941182103552] #356861941182103552 Aichi
-
-
 path = os.path.dirname(os.path.realpath(__file__))
+
+
+with open (f'{path}/json/admins.json', 'r') as f:
+    admins = list(json.load(f))
+
+
 
 
 from discord.ext import commands
@@ -63,6 +65,13 @@ async def reload(ctx, extension):
             bot.load_extension(f'cogs.{filename[:-3]}')
     return
 
+@bot.command(hidden=True)
+async def promote(ctx, user : discord.Member):
+    if ctx.author.id not in admins:
+        return
+    if user.id in admins:
+        await ctx.channel.send(f'User already admin!')
+        return
 
 
 # Webhook Commands
