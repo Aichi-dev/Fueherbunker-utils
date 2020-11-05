@@ -32,6 +32,7 @@ TOKEN = os.getenv('PROD_DISCORD_TOKEN') #Prod
 
 intents = discord.Intents.default()
 intents.members = True
+intents.bans = True
 
 bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
 
@@ -115,6 +116,8 @@ async def on_message(message):
     if message.guild == None and message.author != bot.user:
         print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs\n{message.content} ')
         return
+    if message.channel == message.guild.text_channels[0]:
+        return
 
 # Among Us Webhook Commands
     if 'Among_Us' in bot.cogs.keys():
@@ -191,12 +194,16 @@ async def on_message(message):
 
 @bot.event
 async def on_member_remove(member):
-    await member.guild.text_channels[0].send(f'{member.display_name}#{member.discriminator}  left the BUNKER')
+    try:
+        await member.guild.fetch_ban(member)
+        return
+    except discord.NotFound:
+        await member.guild.text_channels[0].send(f'{member.display_name}#{member.discriminator}  left the BUNKER')
     pass
 
 @bot.event
-async def on_member_ban(member):
-    await member.guild.text_channels[0].send(f'<:MARTIN:357915375436038154> {member.display_name}#{member.discriminator} <:gehdeeischern:378306434896625674> ||(User was Banned)||')
+async def on_member_ban(guild, user):
+    await guild.text_channels[0].send(f'<:MARTIN:357915375436038154> {user.display_name}#{user.discriminator} <:gehdeeischern:378306434896625674> ||(User was Banned)||')
     pass
 
 
