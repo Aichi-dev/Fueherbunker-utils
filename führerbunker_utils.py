@@ -205,7 +205,10 @@ async def on_member_ban(guild, user):
     await guild.text_channels[0].send(f'<:MARTIN:357915375436038154> {user.display_name}#{user.discriminator} <:gehdeeischern:378306434896625674> ||(User was Banned)||')
     pass
 
-
+@bot.event
+async def on_member_join(member):
+    role = member.guild.get_role(759390493624369162)
+    await member.add_roles(role)
 
 @bot.event
 async def on_command_error(ctx, error):
