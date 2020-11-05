@@ -113,7 +113,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
     if message.guild == None and message.author != bot.user:
-        print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs \n{message.content} ')
+        print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs\n{message.content} ')
         return
 
 # Among Us Webhook Commands
@@ -188,6 +188,17 @@ async def on_message(message):
 # End Amon Us Webhook Commands
 
     await bot.process_commands(message)
+
+@bot.event
+async def on_member_remove(member):
+    await member.guild.text_channels[0].send(f'{member.display_name}#{member.discriminator}  left the BUNKER')
+    pass
+
+@bot.event
+async def on_member_ban(member):
+    await member.guild.text_channels[0].send(f'<:MARTIN:357915375436038154> {member.display_name}#{member.discriminator} <:gehdeeischern:378306434896625674> ||(User was Banned)||')
+    pass
+
 
 
 @bot.event
