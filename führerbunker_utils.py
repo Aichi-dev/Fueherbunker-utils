@@ -2,6 +2,11 @@
 import os
 import discord
 import json
+from discord.ext import commands
+from discord.ext import tasks
+
+from dotenv import load_dotenv
+from datetime import datetime
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -17,12 +22,6 @@ else:
         admins = json.load(f)
         f.close()
 
-
-from discord.ext import commands
-from discord.ext import tasks
-
-from dotenv import load_dotenv
-from datetime import datetime
 
 load_dotenv()
 
