@@ -5,11 +5,17 @@ import json
 
 path = os.path.dirname(os.path.realpath(__file__))
 
-
-with open (f'{path}/json/admins.json', 'r') as f:
-    admins = list(json.load(f))
-
-
+if os.path.exists(f'{path}/json/admins.json'):
+    with open (f'{path}/json/admins.json', 'r') as f:
+        admins = json.load(f)
+        f.close()
+else:
+    with open (f'{path}/json/admins.json', 'w') as f:
+        f.write('[]')
+        f.close()
+    with open (f'{path}/json/admins.json', 'r') as f:
+        admins = json.load(f)
+        f.close()
 
 
 from discord.ext import commands
@@ -67,12 +73,42 @@ async def reload(ctx, extension):
 
 @bot.command(hidden=True)
 async def promote(ctx, user : discord.Member):
+    global admins
     if ctx.author.id not in admins:
         return
     if user.id in admins:
         await ctx.channel.send(f'User already admin!')
         return
+    with open (f'{path}/json/admins.json', 'w') as f:
+        admins.append(user.id)
+        json.dump(admins, f)
+        f.close()
+    with open (f'{path}/json/admins.json', 'r') as f:
+        admins = json.load(f)
+        f.close()
 
+@bot.command(hidden=True)
+async def demote(ctx, user : discord.Member):
+    global admins
+    if ctx.author.id not in admins or user.id == 356861941182103552:
+        return
+    if user.id not in admins:
+        await ctx.channel.send(f'User is not admin!')
+        return
+    with open (f'{path}/json/admins.json', 'w') as f:
+        admins.remove(user.id)
+        json.dump(admins, f)
+        f.close()
+    with open (f'{path}/json/admins.json', 'r') as f:
+        admins = json.load(f)
+        f.close()
+
+@bot.command(hidden=True)
+async def show_admins(ctx):
+    names = []
+    for a in admins:
+        names.append(f'{ctx.guild.get_member(a).display_name}#{ctx.guild.get_member(a).discriminator}')
+    await ctx.channel.send(f'Current admins: {names}')
 
 # Webhook Commands
 @bot.event
@@ -169,8 +205,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error,commands.MemberNotFound):
         await ctx.channel.send(f'Tag a valid member!')
     else:
-        for admin in admins:
-            await bot.get_user(int(admin)).send(f'Unhandled error:{type(error)}\n{error.args[0]}\n\ntriggerd_by:\n{ctx.author}\n\nmessage:\n{ctx.message.content}')
+        await bot.get_user(356861941182103552).send(f'Unhandled error:{type(error)}\n{error.args[0]}\n\ntriggerd_by:\n{ctx.author}\n\nmessage:\n{ctx.message.content}')
         raise error
 
 for filename in os.listdir(f'{path}/cogs'):
