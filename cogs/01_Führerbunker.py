@@ -50,9 +50,9 @@ class Führerbunker(commands.Cog):
             return
         embedTTT = discord.Embed(
             title=f'<:TTT:769985066611769394><:TTT:769985066611769394><:TTT:769985066611769394> Server',
-            url="http://85.214.63.77/ttt",
+            url="http://85.214.63.77:8080/ttt",
             color=15746887)
-        embedTTT.add_field(name='Join', value='[Join\nHERE!](http://85.214.63.77/ttt)')
+        embedTTT.add_field(name='Join', value='[Join\nHERE!](http://85.214.63.77:8080/ttt)')
         embedTTT.add_field(name='Mod Collection', value='[Subscribe\nHERE!](https://steamcommunity.com/sharedfiles/filedetails/?id=2022328842)')
         embedTTT.set_thumbnail(url='https://maurits.tv/data/garrysmod/wiki/wiki.garrysmod.com/images/5/5d/EX_GMOD12_ttt_logo_cropped.png')
 
