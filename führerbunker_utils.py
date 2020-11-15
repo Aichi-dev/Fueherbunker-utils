@@ -115,7 +115,7 @@ async def on_message(message):
     if message.guild == None and message.author != bot.user:
         print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs\n{message.content} ')
         return
-    if message.channel == message.guild.text_channels[0]:
+    if message.channel == message.guild.text_channels[0] and message.content != 'fbttt':
         return
 
 # Among Us Webhook Commands
@@ -152,27 +152,32 @@ async def on_message(message):
                 await message.channel.send(f'Please enter a Valid ID!')
                 return
             #Read File with memberIDs
+            ids=[]
             if not os.path.exists(f'{path}/channels/{voice_channel_id}_{message.guild.id}'):
                 print('no members were Muted in channel')
-                return
-            ids=[]
-            try:
-                with open(f'{path}/channels/{voice_channel_id}_{message.guild.id}','r') as fh:
-                    for line in fh:
-                        # remove linebreak which is the last character of the string
-                        currentPlace = line[:-1]
-                        if currentPlace not in ids:
-                            # add item to the list
-                            ids.append(currentPlace)
-                    print(ids)
-                    fh.close()
-            except Exception:
-                print('Error Reading File')
-                return
+                pass
+            else:
+                try:
+                    with open(f'{path}/channels/{voice_channel_id}_{message.guild.id}','r') as fh:
+                        for line in fh:
+                            # remove linebreak which is the last character of the string
+                            currentPlace = line[:-1]
+                            if currentPlace not in ids:
+                                # add item to the list
+                                ids.append(currentPlace)
+                        print(ids)
+                        fh.close()
+                    os.remove(f'{path}/channels/{voice_channel_id}_{message.guild.id}')
+                except Exception:
+                    print('Error Reading File')
+                    return
+            #### Get current chanell members and add them to list of IDs if not in
+            for mem in message.guild.get_channel(voice_channel_id).members:
+                if mem.id not in ids and mem.voice.mute == True:
+                    ids.append(mem.id)
             for id in ids:
                 member = message.guild.get_member(int(id))
                 await member.edit(mute = False)
-            os.remove(f'{path}/channels/{voice_channel_id}_{message.guild.id}')
 
         if message.content.startswith('amongclear') or message.content.startswith('fbamongclear'):
             if message.author == bot.user or message.guild == None or message.author.bot == True:
