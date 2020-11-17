@@ -2,9 +2,10 @@
 import os
 import discord
 import json
+import random
+
 from discord.ext import commands
 from discord.ext import tasks
-
 from dotenv import load_dotenv
 from datetime import datetime
 
@@ -115,6 +116,8 @@ async def on_message(message):
     if message.guild == None and message.author != bot.user:
         print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs\n{message.content} ')
         return
+    if random.randint(0,100) < 6:
+        await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
     if message.channel == message.guild.text_channels[0] and message.content != 'fbttt':
         return
 
@@ -123,7 +126,7 @@ async def on_message(message):
         if message.content.startswith('amongmute ') or message.content.startswith('fbamongmute '):
             if message.author == bot.user or message.guild == None : #or message.author.bot == False
                 return
-            print(f'{message.content}') # debug
+            #print(f'{message.content}') # debug
             #try to get channel
             try:
                 voice_channel_id= int(message.content.split()[1])
@@ -139,7 +142,7 @@ async def on_message(message):
                     fh.close()
                 for id in ids:
                     member = message.guild.get_member(int(id))
-                    print(member)
+                    #print(member)
                     await member.edit(mute = True)
                 return
 
@@ -154,7 +157,7 @@ async def on_message(message):
             #Read File with memberIDs
             ids=[]
             if not os.path.exists(f'{path}/channels/{voice_channel_id}_{message.guild.id}'):
-                print('no members were Muted in channel')
+                #print('no members were Muted in channel')
                 pass
             else:
                 try:
@@ -165,11 +168,11 @@ async def on_message(message):
                             if currentPlace not in ids:
                                 # add item to the list
                                 ids.append(currentPlace)
-                        print(ids)
+                        #print(ids)
                         fh.close()
                     os.remove(f'{path}/channels/{voice_channel_id}_{message.guild.id}')
                 except Exception:
-                    print('Error Reading File')
+                    #print('Error Reading File')
                     return
             #### Get current chanell members and add them to list of IDs if not in
             for mem in message.guild.get_channel(voice_channel_id).members:
@@ -189,9 +192,10 @@ async def on_message(message):
                 for filename in os.listdir(f'{path}/channels'):
                     if filename.endswith(f'{message.guild.id}'):
                         os.remove(f'{path}/channels/{filename}')
+                    return
             except:
-                print('error')
-            return
+                #print('error')
+                return
 # End Amon Us Webhook Commands
 
     await bot.process_commands(message)
