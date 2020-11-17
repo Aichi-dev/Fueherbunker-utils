@@ -205,7 +205,7 @@ async def on_member_remove(member):
     try:
         await member.guild.fetch_ban(member)
         return
-    except discord.NotFound:
+    except:
         await member.guild.text_channels[0].send(f'{member.display_name}#{member.discriminator}  left the BUNKER')
     pass
 
