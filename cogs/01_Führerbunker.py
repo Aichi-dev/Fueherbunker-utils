@@ -124,6 +124,7 @@ class Führerbunker(commands.Cog):
         return
 
 
+
     @tasks.loop(seconds=10)
     async def unmute_hoizmeih(self):
         if self.bot._ready._value == False:
