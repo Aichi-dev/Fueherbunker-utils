@@ -37,17 +37,18 @@ intents.bans = True
 bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
 
 
-
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} IS AM START!')
     await bot.change_presence(activity=discord.Game('w PP | fbhelp'))
 
+    #with open('{path}/content/ronald.jpg', 'rb') as f:
+    #    await bot.user.edit(avatar=f.read())
     #### set df MC_Chance
     global mc_chance
-    mc_chance = 5
+    mc_chance = 7
     global mani_mc_chance
-    mani_mc_chance = 85
+    mani_mc_chance = 17
     ####
 
 @bot.command(hidden=True)
@@ -127,8 +128,34 @@ async def on_message(message):
         return
     if random.randint(0,100) < mc_chance:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
+        try:
+            if os.path.exists(f'{path}/json/maeces.json'):
+                with open(f'{path}/json/maeces.json', 'r') as f:
+                    mc_stats = json.load(f)
+                    f.close()
+                with open(f'{path}/json/maeces.json', 'w') as f:
+                    try:
+                        if(mc_stats[f'{message.author.mention}']):
+                            mc_stats[f'{message.author.mention}'] = mc_stats[f'{message.author.mention}'] + 1
+                            json.dump(mc_stats, f, indent=4)
+                            pass
+                    except:
+                        mc_stats[f'{message.author.mention}'] = 1
+                        json.dump(mc_stats, f, indent=4)
+                    f.close()
+            else:
+                with open (f'{path}/json/maeces.json', 'w') as f:
+                    f.write('{}')
+                    f.close()
+        except:
+            with open(f'{path}/json/maeces.json', 'w') as f:
+                f.write('{}')
+
     elif message.author.id == 356859579373453313 and random.randint(0,100) < mani_mc_chance:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
+
+
+
     if message.channel == message.guild.text_channels[0] and message.content != 'fbttt':
         return
 
