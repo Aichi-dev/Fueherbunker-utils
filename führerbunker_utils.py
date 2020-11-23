@@ -33,6 +33,7 @@ TOKEN = os.getenv('PROD_DISCORD_TOKEN') #Prod
 intents = discord.Intents.default()
 intents.members = True
 intents.bans = True
+intents.reactions = True
 
 bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
 
@@ -46,9 +47,12 @@ async def on_ready():
     #    await bot.user.edit(avatar=f.read())
     #### set df MC_Chance
     global mc_chance
-    mc_chance = 20
+    mc_chance = 19
     global mani_mc_chance
-    mani_mc_chance = 40
+    mani_mc_chance = 41
+    global react_mc_chance
+    react_mc_chance = 25
+
     ####
 
 @bot.command(hidden=True)
@@ -118,6 +122,36 @@ async def show_admins(ctx):
         names.append(f'{ctx.guild.get_member(a).display_name}#{ctx.guild.get_member(a).discriminator}')
     await ctx.channel.send(f'Current admins: {names}')
 
+@bot.event
+async def on_reaction_add(reaction, user):
+    if(reaction.me == True and user != bot.user and reaction.emoji.id == 777971067799994399 and random.randint(0,100) < react_mc_chance):
+        maecesadd(user.mention)
+    pass
+
+def maecesadd(mention):
+    try:
+        if os.path.exists(f'{path}/json/maeces.json'):
+            with open(f'{path}/json/maeces.json', 'r') as f:
+                mc_stats = json.load(f)
+                f.close()
+            with open(f'{path}/json/maeces.json', 'w') as f:
+                try:
+                    if(mc_stats[f'{mention}']):
+                        mc_stats[f'{mention}'] = mc_stats[f'{mention}'] + 1
+                        json.dump(mc_stats, f, indent=4)
+                        pass
+                except:
+                    mc_stats[f'{mention}'] = 1
+                    json.dump(mc_stats, f, indent=4)
+                f.close()
+        else:
+            with open (f'{path}/json/maeces.json', 'w') as f:
+                f.write('{}')
+                f.close()
+    except:
+        with open(f'{path}/json/maeces.json', 'w') as f:
+            f.write('{}')
+
 # Webhook Commands
 @bot.event
 async def on_message(message):
@@ -128,33 +162,11 @@ async def on_message(message):
         return
     if random.randint(0,100) < mc_chance:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
-        try:
-            if os.path.exists(f'{path}/json/maeces.json'):
-                with open(f'{path}/json/maeces.json', 'r') as f:
-                    mc_stats = json.load(f)
-                    f.close()
-                with open(f'{path}/json/maeces.json', 'w') as f:
-                    try:
-                        if(mc_stats[f'{message.author.mention}']):
-                            mc_stats[f'{message.author.mention}'] = mc_stats[f'{message.author.mention}'] + 1
-                            json.dump(mc_stats, f, indent=4)
-                            pass
-                    except:
-                        mc_stats[f'{message.author.mention}'] = 1
-                        json.dump(mc_stats, f, indent=4)
-                    f.close()
-            else:
-                with open (f'{path}/json/maeces.json', 'w') as f:
-                    f.write('{}')
-                    f.close()
-        except:
-            with open(f'{path}/json/maeces.json', 'w') as f:
-                f.write('{}')
+        maecesadd(message.author.mention)
 
     elif message.author.id == 356859579373453313 and random.randint(0,100) < mani_mc_chance:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
-
-
+        maecesadd(message.author.mention)
 
     if message.channel == message.guild.text_channels[0] and message.content != 'fbttt' and message.content != 'mcstats':
         return

@@ -129,7 +129,7 @@ class Führerbunker(commands.Cog):
         with open (f'{path}/../json/maeces.json', 'r') as f:
             stats = json.load(f)
         sort = dict( sorted(stats.items(), key=operator.itemgetter(1),reverse=True))
-        embed=discord.Embed(title="Mäces Stats", description="Derzeitiges Mäces Leaderboard")
+        embed=discord.Embed(title="Mäces Stats", description="Current Mäces Leaderboard")
         embed.set_author(name="Ronald", icon_url="https://img.welt.de/img/vermischtes/mobile160292182/9432501907-ci102l-w1300/Ronald-McDonald.jpg")
         i = 0
         for stat in sort:
