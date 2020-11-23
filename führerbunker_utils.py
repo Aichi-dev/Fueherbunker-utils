@@ -47,11 +47,11 @@ async def on_ready():
     #    await bot.user.edit(avatar=f.read())
     #### set df MC_Chance
     global mc_chance
-    mc_chance = 19
+    mc_chance = 6
     global mani_mc_chance
-    mani_mc_chance = 41
+    mani_mc_chance = 26
     global react_mc_chance
-    react_mc_chance = 25
+    react_mc_chance = 20
 
     ####
 
@@ -168,7 +168,7 @@ async def on_message(message):
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
         maecesadd(message.author.mention)
 
-    if message.channel == message.guild.text_channels[0] and message.content != 'fbttt' and message.content != 'mcstats':
+    if message.channel == message.guild.text_channels[0] and message.content != 'fbttt' and message.content != 'fbmcstats':
         return
 
 # Among Us Webhook Commands
