@@ -46,9 +46,9 @@ async def on_ready():
     #    await bot.user.edit(avatar=f.read())
     #### set df MC_Chance
     global mc_chance
-    mc_chance = 7
+    mc_chance = 20
     global mani_mc_chance
-    mani_mc_chance = 17
+    mani_mc_chance = 40
     ####
 
 @bot.command(hidden=True)
@@ -156,7 +156,7 @@ async def on_message(message):
 
 
 
-    if message.channel == message.guild.text_channels[0] and message.content != 'fbttt':
+    if message.channel == message.guild.text_channels[0] and message.content != 'fbttt' and message.content != 'mcstats':
         return
 
 # Among Us Webhook Commands

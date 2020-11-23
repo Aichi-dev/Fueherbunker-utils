@@ -2,6 +2,7 @@ import discord
 import json
 import os
 import asyncio
+import operator
 from discord.ext import commands, tasks
 from datetime import datetime
 
@@ -123,7 +124,19 @@ class Führerbunker(commands.Cog):
         self.bot.loop.create_task(discord_tour(self, ctx, user))
         return
 
-
+    @commands.command(name='mcstats',help='show how often each member was at the Mäci',brief='Display current Mäci stats')
+    async def mcstats(self, ctx):
+        with open (f'{path}/../json/maeces.json', 'r') as f:
+            stats = json.load(f)
+        sort = dict( sorted(stats.items(), key=operator.itemgetter(1),reverse=True))
+        embed=discord.Embed(title="Mäces Stats", description="Derzeitiges Mäces Leaderboard")
+        embed.set_author(name="Ronald", icon_url="https://img.welt.de/img/vermischtes/mobile160292182/9432501907-ci102l-w1300/Ronald-McDonald.jpg")
+        i = 0
+        for stat in sort:
+            i  = i + 1
+            embed.add_field(name=f'Place {i}.', value=f'{stat} ist {stats[stat]} mal zum Mäces gefahren!', inline=False)
+        await ctx.send(embed=embed)
+        return
 
     @tasks.loop(seconds=10)
     async def unmute_hoizmeih(self):
