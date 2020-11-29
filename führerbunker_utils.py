@@ -46,12 +46,9 @@ async def on_ready():
     #with open('{path}/content/ronald.jpg', 'rb') as f:
     #    await bot.user.edit(avatar=f.read())
     #### set df MC_Chance
-    global mc_chance
-    mc_chance = 6
-    global mani_mc_chance
-    mani_mc_chance = 26
-    global react_mc_chance
-    react_mc_chance = 20
+    bot.mc_chance = 6
+    bot.mani_mc_chance = 26
+    bot.react_mc_chance = 20
 
     ####
 
@@ -124,7 +121,7 @@ async def show_admins(ctx):
 
 @bot.event
 async def on_reaction_add(reaction, user):
-    if(reaction.me == True and user != bot.user and reaction.emoji.id == 777971067799994399 and random.randint(0,100) < react_mc_chance):
+    if(reaction.me == True and user != bot.user and reaction.emoji.id == 777971067799994399 and random.randint(0,100) < bot.react_mc_chance):
         maecesadd(user.mention)
     pass
 
@@ -160,11 +157,11 @@ async def on_message(message):
     if message.guild == None and message.author != bot.user:
         print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs\n{message.content} ')
         return
-    if random.randint(0,100) < mc_chance:
+    if random.randint(0,100) < bot.mc_chance:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
         maecesadd(message.author.mention)
 
-    elif message.author.id == 356859579373453313 and random.randint(0,100) < mani_mc_chance:
+    elif message.author.id == 356859579373453313 and random.randint(0,100) < bot.mani_mc_chance:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
         maecesadd(message.author.mention)
 
