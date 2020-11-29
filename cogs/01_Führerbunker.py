@@ -3,6 +3,8 @@ import json
 import os
 import asyncio
 import operator
+import audioread
+import time
 from discord.ext import commands, tasks
 from datetime import datetime
 
@@ -70,7 +72,7 @@ class Führerbunker(commands.Cog):
         await user2.edit(voice_channel=self.bot.get_channel(772079329819623445))
         return
 
-    @commands.command(name='HoizMeih', aliases=['hm'], brief='Mute Member for 30sec', help='Mute Member because he smells bad LOL\nCooldown= 2 uses per 120sec')
+    @commands.command(name='HoizMeih', aliases=['hm'], brief='Mute Member for 30sec', help='Mute Member because he stinks bad LOL\nCooldown= 2 uses per 120sec')
     @commands.cooldown(2,120,type=commands.BucketType.user)
     async def HoizMeih(self, ctx, user : discord.Member):
         if ctx.author == self.bot.user or ctx.guild == None:
@@ -158,6 +160,29 @@ class Führerbunker(commands.Cog):
                 with open (f'{path}/../json/hoizmeih.json', 'w') as f:
                     content.pop(str(entry))
                     json.dump(content, f, indent=4)
+
+####
+#Voice Test
+    @commands.command(name='voice_test',help='',brief='')
+    async def voice_test(self, ctx, member : discord.Member):
+        sound  = f'{path}/../sounds/china.mp3'
+        channel = member.voice.channel
+        vc = await channel.connect()
+        vc.play(discord.FFmpegPCMAudio(sound))
+        time.sleep(0.5)
+        vc.play(discord.FFmpegPCMAudio(sound))
+        with audioread.audio_open(sound) as f:
+            #Start Playing
+            time.sleep(f.duration)
+        await vc.disconnect()
+        return
+
+####
+async def play_voice(self, ctx, *, file):
+    pass
+
+
+
 
 def setup(bot):
     bot.add_cog(Führerbunker(bot))
