@@ -133,7 +133,7 @@ class Führerbunker(commands.Cog):
         sort = dict( sorted(stats.items(), key=operator.itemgetter(1),reverse=True))
         embed=discord.Embed(title="Mäces Stats", description="Current Mäces Leaderboard")
         embed.set_author(name="Ronald", icon_url="https://img.welt.de/img/vermischtes/mobile160292182/9432501907-ci102l-w1300/Ronald-McDonald.jpg")
-        embed.set_footer(text=f'Current Chance: {self.bot.mc_chance}% ; Mani only Chance: {self.bot.mani_mc_chance}% ; React Chance: {self.bot.react_mc_chance}%')
+        embed.set_footer(text=f'Current Chance: {self.bot.mc_chance}% ; Mani only Chance: {self.bot.mani_mc_chance}% ; "Midfoah" Chance: {self.bot.react_mc_chance}%')
         i = 0
         for stat in sort:
             i  = i + 1
@@ -160,26 +160,6 @@ class Führerbunker(commands.Cog):
                 with open (f'{path}/../json/hoizmeih.json', 'w') as f:
                     content.pop(str(entry))
                     json.dump(content, f, indent=4)
-
-####
-#Voice Test
-    @commands.command(name='voice_test',help='',brief='')
-    async def voice_test(self, ctx, member : discord.Member):
-        sound  = f'{path}/../sounds/china.mp3'
-        channel = member.voice.channel
-        vc = await channel.connect()
-        vc.play(discord.FFmpegPCMAudio(sound))
-        time.sleep(0.5)
-        vc.play(discord.FFmpegPCMAudio(sound))
-        with audioread.audio_open(sound) as f:
-            #Start Playing
-            time.sleep(f.duration)
-        await vc.disconnect()
-        return
-
-####
-async def play_voice(self, ctx, *, file):
-    pass
 
 
 
