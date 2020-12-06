@@ -93,7 +93,6 @@ class Führerbunker(commands.Cog):
             'timestamp': f'{str(datetime.now().timestamp())}'
             }
             muted[f'{user}'] = to_mute
-
             json.dump(muted, f, indent=4)
         return
 
@@ -156,7 +155,6 @@ class Führerbunker(commands.Cog):
                 except:
                     print('member not connected to voice')
                     continue
-                #Pop entry from File
                 with open (f'{path}/../json/hoizmeih.json', 'w') as f:
                     content.pop(str(entry))
                     json.dump(content, f, indent=4)

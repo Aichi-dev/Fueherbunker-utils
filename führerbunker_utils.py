@@ -41,15 +41,15 @@ bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} IS AM START!')
-    await bot.change_presence(activity=discord.Game('w PP | fbhelp'))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="dei mua | fbhelp"))
 
     #with open('{path}/content/ronald.jpg', 'rb') as f:
     #    await bot.user.edit(avatar=f.read())
     #### set df MC_Chance
     bot.mc_chance = 6
-    bot.mani_mc_chance = 26
-    bot.react_mc_chance = 20
-
+    bot.mani_mc_chance = 56
+    bot.react_mc_chance = 18
+    bot.mani = 356859579373453313
     ####
 
 @bot.command(hidden=True)
@@ -157,11 +157,11 @@ async def on_message(message):
     if message.guild == None and message.author != bot.user:
         print(f'{(datetime.now()).strftime("%d/%m/%Y %H:%M:%S")} New Message from {message.author} in DMs\n{message.content} ')
         return
-    if random.randint(0,100) < bot.mc_chance:
+    if message.channel.id == 356862003291095061 and random.randint(0,100) < bot.mc_chance:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
         maecesadd(message.author.mention)
 
-    elif message.author.id == 356859579373453313 and random.randint(0,100) < bot.mani_mc_chance:
+    elif message.channel.id == 356862003291095061 and message.author.id == bot.mani and random.randint(0,100) < bot.mani_mc_chance or datetime.weekday == 3 and message.author.id == bot.mani:
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
         maecesadd(message.author.mention)
 
