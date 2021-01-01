@@ -99,7 +99,10 @@ class Führerbunker(commands.Cog):
     @commands.command(name='wakeup',aliases=['wake'],brief='Try to wake user from mute xD',help='Moves Called member between afk and your Voice Channel like x number of times def is 5 \nonly works if user is connected to a Voice Channel\ncooldown=2 uses per 300sec')
     @commands.cooldown(2,120,type=commands.BucketType.user)
     async def wakeup(self,ctx, user : discord.Member, count : int  = 3):
-            if count > 100:
+            if user.voice == None or ctx.author.voice == None:
+                ctx.command.reset_cooldown(ctx)
+                return
+            if count > 1000:
                 count = 3
                 await ctx.channel.send(f'requested count exceeds max amount')
                 ctx.command.reset_cooldown(ctx)
@@ -140,6 +143,19 @@ class Führerbunker(commands.Cog):
         await ctx.send(embed=embed)
         return
 
+    @commands.command(name='afk',brief='Move all fullmuted or idle members to AFK channel',help='Move all fullmuted or idle members to AFK channel')
+    @commands.cooldown(2,120,type=commands.BucketType.user)
+    async def afk(self,ctx):
+        voice_users = list(ctx.message.guild._voice_states.keys())
+        i = 0
+        for id in voice_users:
+            user = ctx.message.guild.get_member(int(id))
+            if (user.voice.self_deaf == True and user.voice.self_mute == True) or user.raw_status == 'idle':
+                i = i +1
+                await user.edit(voice_channel=ctx.message.guild.afk_channel)
+        if i != 0:
+                await ctx.channel.send(f'Moved {i} member(s) to AFK')
+        return
     @tasks.loop(seconds=10)
     async def unmute_hoizmeih(self):
         if self.bot._ready._value == False:
@@ -158,6 +174,7 @@ class Führerbunker(commands.Cog):
                 with open (f'{path}/../json/hoizmeih.json', 'w') as f:
                     content.pop(str(entry))
                     json.dump(content, f, indent=4)
+
 
 
 

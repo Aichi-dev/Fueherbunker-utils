@@ -24,6 +24,14 @@ else:
         f.close()
 
 
+def load_mcchances():
+    with open (f'{path}/json/mc_chances.json', 'r') as f:
+        conf = json.load(f)
+        bot.mc_chance = conf["all"]
+        bot.mani_mc_chance = conf["mani"]
+        bot.react_mc_chance = conf["midfoah"]
+        bot.mani = 356859579373453313
+        f.close()
 load_dotenv()
 
 #TOKEN = os.getenv('TEST_DISCORD_TOKEN') #Test
@@ -34,6 +42,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.bans = True
 intents.reactions = True
+intents.presences = True
 
 bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
 
@@ -41,15 +50,13 @@ bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} IS AM START!')
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="dei mua | fbhelp"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="dei mua | fbhelp"))
 
     #with open('{path}/content/ronald.jpg', 'rb') as f:
     #    await bot.user.edit(avatar=f.read())
     #### set df MC_Chance
-    bot.mc_chance = 6
-    bot.mani_mc_chance = 56
-    bot.react_mc_chance = 18
-    bot.mani = 356859579373453313
+    load_mcchances()
+    bot.volume = 0.07
     ####
 
 @bot.command(hidden=True)
@@ -59,6 +66,29 @@ async def load(ctx, extension):
     for filename in os.listdir(f'{path}/cogs'):
         if filename.endswith('.py') and filename.startswith(f'{extension}'):
             bot.load_extension(f'cogs.{filename[:-3]}')
+    return
+
+@bot.command(hidden=True,name='setchance',help='Edit chances for Mäces\nValid modes are ["all","mani","midfoah"]',brief='Edit chances for Mäces')
+async def setchance(ctx, amount : int, mode : str="all"):
+    global admins
+    if ctx.author.id not in admins:
+        return
+    valid = ["all","mani","midfoah"]
+    if mode not in valid:
+        await ctx.channel.send(f'Mode must be one of the following options: {valid}')
+        return
+    if amount > 99 or amount <= 1:
+        await ctx.channel.send(f'Amount must be between 1 and 99')
+        return
+    with open (f'{path}/json/mc_chances.json', 'r') as f:
+        conf = json.load(f)
+        f.close()
+    with open (f'{path}/json/mc_chances.json', 'w') as f:
+        conf[mode] = amount
+        json.dump(conf,f,indent=4)
+        f.close()
+    load_mcchances()
+    await ctx.channel.send(f'Set MC Chance for {mode} to {amount}%!')
     return
 
 @bot.command(hidden=True)
@@ -165,7 +195,7 @@ async def on_message(message):
         await message.add_reaction('<:Foah_ma_MC:777971067799994399>')
         maecesadd(message.author.mention)
 
-    if message.channel == message.guild.text_channels[0] and message.content != 'fbttt' and message.content != 'fbmcstats':
+    if message.channel == message.guild.text_channels[0] and message.content != 'fbttt' and message.content != 'fbmcstats' and message.author.id not in admins:
         return
 
 # Among Us Webhook Commands

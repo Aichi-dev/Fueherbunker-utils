@@ -17,13 +17,13 @@ async def loop_sound(self,ctx,voice,audio):
         try:
             voice.play(discord.FFmpegPCMAudio(audio), after=lambda e: repeat(voice, audio))
             voice.source = discord.PCMVolumeTransformer(voice.source)
-            voice.source.volume = 0.07
+            voice.source.volume = self.bot.volume
         except:
             pass
     if voice:
         voice.play(discord.FFmpegPCMAudio(audio), after=lambda e: repeat(voice, audio))
         voice.source = discord.PCMVolumeTransformer(voice.source)
-        voice.source.volume = 0.07
+        voice.source.volume = self.bot.volume
 
 
 class Music_Voice(commands.Cog):
@@ -85,7 +85,7 @@ class Music_Voice(commands.Cog):
         if loop == False:
             voice.play(discord.FFmpegPCMAudio(audio))
             voice.source = discord.PCMVolumeTransformer(voice.source)
-            voice.source.volume = 0.07
+            voice.source.volume = self.bot.volume
             await ctx.send(f"Playing: {nname[0]}")
             self.stop_if_not_playing.start(ctx)
         else:
@@ -115,6 +115,7 @@ class Music_Voice(commands.Cog):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_playing():
             voice.source.volume = voice.source.volume + amount
+            self.bot.volume = voice.source.volume + amount
         else:
             return
 
@@ -123,6 +124,7 @@ class Music_Voice(commands.Cog):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_playing():
             voice.source.volume = voice.source.volume - amount
+            self.bot.volume = voice.source.volume - amount
         else:
             return
 
@@ -141,6 +143,8 @@ class Music_Voice(commands.Cog):
         if play is None:
             return
         else:
+            if self.stop_if_not_playing.is_running():
+                self.stop_if_not_playing.cancel()
             channel = ctx.message.author.voice.channel
             voice = get(self.bot.voice_clients, guild=ctx.guild)
 
@@ -153,7 +157,7 @@ class Music_Voice(commands.Cog):
                 await asyncio.sleep(1)
             voice.play(discord.FFmpegPCMAudio(f"{path}/../sounds/{play}"))
             voice.source = discord.PCMVolumeTransformer(voice.source)
-            voice.source.volume = 0.07
+            voice.source.volume = self.bot.volume
             await ctx.send(f"Playing: {play}")
             if self.stop_if_not_playing.is_running():
                 self.stop_if_not_playing.cancel()
@@ -163,8 +167,12 @@ class Music_Voice(commands.Cog):
     async def soundlist(self, ctx):
         files = [f for f in os.listdir(f"{path}/../sounds/") if f.endswith(".mp3")]
         embed=discord.Embed(title="Sound Files", description="to play a file send the fbsound FILENAME \nexample: fbsound gaunzn")
-        for f in files:
-            embed.add_field(name= "Sound:", value = f'{f}', inline=False)
+        delimeter = '\n• '
+        names = delimeter.join(files)
+        embed.add_field(name= "Sounds:", value = f'• {names}', inline=False)
+        embed.set_footer(text=f'{len(files)} sounds available')
+        #for f in files:
+        #    embed.add_field(name= "Sound:", value = f'{f}', inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name='soundadd',help='Upload mp3 as attachment!',brief='Add mp3 sound!')
