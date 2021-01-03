@@ -129,11 +129,11 @@ class Führerbunker(commands.Cog):
         return
 
     @commands.command(name='mcstats',help='show how often each member was at the Mäci',brief='Display current Mäci stats')
-    async def mcstats(self, ctx):
-        with open (f'{path}/../json/maeces.json', 'r') as f:
+    async def mcstats(self, ctx , year : str = "" ):
+        with open (f'{path}/../json/maeces{year}.json', 'r') as f:
             stats = json.load(f)
         sort = dict( sorted(stats.items(), key=operator.itemgetter(1),reverse=True))
-        embed=discord.Embed(title="Mäces Stats", description="Current Mäces Leaderboard")
+        embed=discord.Embed(title="Mäces Stats", description=f"{year} Mäces Leaderboard")
         embed.set_author(name="Ronald", icon_url="https://img.welt.de/img/vermischtes/mobile160292182/9432501907-ci102l-w1300/Ronald-McDonald.jpg")
         embed.set_footer(text=f'Current Chance: {self.bot.mc_chance}% ; Mani only Chance: {self.bot.mani_mc_chance}% ; "Midfoah" Chance: {self.bot.react_mc_chance}%')
         i = 0

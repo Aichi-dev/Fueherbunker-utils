@@ -19,10 +19,7 @@ class coming_soon(commands.Cog):
     async def Suggestions_plz(self, ctx):
         if ctx.author == self.bot.user or ctx.guild == None:
             return
-    @commands.command(name='Music_Bot', help='HELL YEAH. w. YouTube')
-    async def Music_Bot(self, ctx):
-        if ctx.author == self.bot.user or ctx.guild == None:
-            return
+
 
 
 

@@ -142,6 +142,13 @@ async def demote(ctx, user : discord.Member):
         admins = json.load(f)
         f.close()
 
+@bot.command(hidden=True,help="manually add one MC Point")
+async def mcadd(ctx, user : discord.Member):
+    global admins
+    if ctx.author.id not in admins:
+        return
+    maecesadd(user.mention)
+
 @bot.command(hidden=True)
 async def show_admins(ctx):
     names = []
