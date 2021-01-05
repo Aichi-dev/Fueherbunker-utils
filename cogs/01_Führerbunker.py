@@ -156,6 +156,21 @@ class Führerbunker(commands.Cog):
         if i != 0:
                 await ctx.channel.send(f'Moved {i} member(s) to AFK')
         return
+    @commands.command(name='move',brief='Move all members in channel to channel',help='Move all members in channel to channel')
+    @commands.cooldown(2,120,type=commands.BucketType.user)
+    async def move(self,ctx,channel : int ):
+        voice_users = ctx.author.voice.channel.members
+        voice_channel = self.bot.get_channel(channel)
+        if voice_channel:
+            i = 0
+            for user in voice_users:
+                i = i +1
+                await user.edit(voice_channel=voice_channel)
+            if i != 0:
+                    await ctx.channel.send(f'Moved {i} member(s) to {voice_channel}')
+        else:
+            await ctx.channel.send('Invalid ID')
+        return
     @tasks.loop(seconds=10)
     async def unmute_hoizmeih(self):
         if self.bot._ready._value == False:
