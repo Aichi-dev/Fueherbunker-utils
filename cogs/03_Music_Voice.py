@@ -129,11 +129,9 @@ class Music_Voice(commands.Cog):
             return
 
     @commands.command(name='sound',help='Play soundfile!',brief='Play sound <name>!')
-    async def sound(self, ctx, name : str = "random"):
-
+    async def sound(self, ctx, name : str = "random", user : discord.Member = "none"):
         files = [f for f in os.listdir(f"{path}/../sounds/") if f.endswith(".mp3")]
         play = None
-
         if name == "random":
             play = random.choice(files)
         else:
@@ -145,7 +143,10 @@ class Music_Voice(commands.Cog):
         else:
             if self.stop_if_not_playing.is_running():
                 self.stop_if_not_playing.cancel()
-            channel = ctx.message.author.voice.channel
+            if user == "none":
+                channel = ctx.message.author.voice.channel
+            else:
+                channel = user.voice.channel
             voice = get(self.bot.voice_clients, guild=ctx.guild)
 
             if voice and voice.is_connected():

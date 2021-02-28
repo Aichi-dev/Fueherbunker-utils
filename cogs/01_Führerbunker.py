@@ -72,7 +72,7 @@ class Führerbunker(commands.Cog):
         await user2.edit(voice_channel=self.bot.get_channel(772079329819623445))
         return
 
-    @commands.command(name='HoizMeih', aliases=['hm'], brief='Mute Member for 30sec', help='Mute Member because he stinks bad LOL\nCooldown= 2 uses per 120sec')
+    @commands.command(name='HoizMeih', brief='Mute Member for 30sec', help='Mute Member because he stinks bad LOL\nCooldown= 2 uses per 120sec')
     @commands.cooldown(2,120,type=commands.BucketType.user)
     async def HoizMeih(self, ctx, user : discord.Member):
         if ctx.author == self.bot.user or ctx.guild == None:
@@ -87,6 +87,31 @@ class Führerbunker(commands.Cog):
         with open (f'{path}/../json/hoizmeih.json', 'r') as f:
             muted = json.load(f)
         with open (f'{path}/../json/hoizmeih.json', 'w') as f:
+            to_mute = {
+            'id' : f'{str(user.id)}',
+            'guild': f'{str(ctx.guild.id)}',
+            'timestamp': f'{str(datetime.now().timestamp())}'
+            }
+            muted[f'{user}'] = to_mute
+            json.dump(muted, f, indent=4)
+        return
+    @commands.command(name='abuse', aliases=['hm'], brief='Mute Member for 30sec', help='Mute Member because he stinks bad LOL\nCooldown= 2 uses per 120sec')
+    @commands.cooldown(2,120,type=commands.BucketType.user)
+    async def abuse(self, ctx, user : discord.Member):
+        if ctx.author == self.bot.user or ctx.guild == None:
+            return
+        if user.voice == None:
+            await ctx.channel.send(f'user not connected to voice')
+            ctx.command.reset_cooldown(ctx)
+            return
+        await user.edit(deafen=True)
+        role = member.guild.get_role(759393298564513816)
+        await member.add_roles(role)
+        await ctx.channel.send(f'A ruah is jetzt amoi!\n{user.mention} was muted for 30sec')
+
+        with open (f'{path}/../json/abuse.json', 'r') as f:
+            muted = json.load(f)
+        with open (f'{path}/../json/abuse.json', 'w') as f:
             to_mute = {
             'id' : f'{str(user.id)}',
             'guild': f'{str(ctx.guild.id)}',
@@ -156,11 +181,11 @@ class Führerbunker(commands.Cog):
         if i != 0:
                 await ctx.channel.send(f'Moved {i} member(s) to AFK')
         return
-    @commands.command(name='move',brief='Move all members in channel to channel',help='Move all members in channel to channel')
+    @commands.command(name='move',brief='Move all members in current channel to channel',help='Move all members in channel to channel')
     @commands.cooldown(2,120,type=commands.BucketType.user)
-    async def move(self,ctx,channel : int ):
+    async def move(self,ctx,channelID : int ):
         voice_users = ctx.author.voice.channel.members
-        voice_channel = self.bot.get_channel(channel)
+        voice_channel = self.bot.get_channel(channelID)
         if voice_channel:
             i = 0
             for user in voice_users:
