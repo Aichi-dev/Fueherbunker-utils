@@ -51,8 +51,7 @@ bot = commands.Bot(command_prefix='fb', intents=intents,case_insensitive=True)
 async def on_ready():
     print(f'{bot.user.name} IS AM START!')
     #activityvar = discord.Activity(type=discord.ActivityType.custom,state="Stalkt mani beim heimlich mci fahrn")
-    streamgame = discord.Game(name="2 Toledo's spotted today!")
-    await bot.change_presence(activity=discord.Streaming(name="McDrive", url="https://www.twitch.tv/antilauch", game=streamgame))
+    await bot.change_presence(activity=discord.Streaming(name="McDrive | 2 Toledo's spotted today!", url="https://www.twitch.tv/antilauch", twitch_name="Ronald"))
     #await bot.change_presence(activity=activityvar)
     #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="mani beim heimlich mci fahrn zu"))
 

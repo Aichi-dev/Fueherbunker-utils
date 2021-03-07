@@ -46,6 +46,7 @@ class Führerbunker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.unmute_hoizmeih.start()
+        self.undo_sitzn.start()
 
     @commands.command(name='ttt', help='Sends Link to TTT Server')
     async def ttt(self, ctx):
@@ -95,30 +96,28 @@ class Führerbunker(commands.Cog):
             muted[f'{user}'] = to_mute
             json.dump(muted, f, indent=4)
         return
-    @commands.command(name='abuse', aliases=['hm'], brief='Mute Member for 30sec', help='Mute Member because he stinks bad LOL\nCooldown= 2 uses per 120sec')
+    @commands.command(name='DauneSitzn',aliases=['sitzen','sizn','daune'], brief='Mute Member for 30sec', help='Mute Member because he stinks bad LOL\nCooldown= 2 uses per 120sec')
     @commands.cooldown(2,120,type=commands.BucketType.user)
-    async def abuse(self, ctx, user : discord.Member):
+    async def DauneSitzn(self, ctx, user : discord.Member):
         if ctx.author == self.bot.user or ctx.guild == None:
             return
-        if user.voice == None:
-            await ctx.channel.send(f'user not connected to voice')
-            ctx.command.reset_cooldown(ctx)
-            return
-        await user.edit(deafen=True)
-        role = member.guild.get_role(759393298564513816)
-        await member.add_roles(role)
-        await ctx.channel.send(f'A ruah is jetzt amoi!\n{user.mention} was muted for 30sec')
-
-        with open (f'{path}/../json/abuse.json', 'r') as f:
-            muted = json.load(f)
-        with open (f'{path}/../json/abuse.json', 'w') as f:
-            to_mute = {
+        await ctx.channel.send(f'{user.mention} sitzt sich kurz daune!')
+        role = user.guild.get_role(818189474051653684)
+        await  user.add_roles(role)
+        try:
+            await user.edit(voice_channel=self.bot.get_channel(358623961854246912))
+        except:
+            pass
+        with open (f'{path}/../json/daunesitzn.json', 'r') as f:
+            sitz = json.load(f)
+        with open (f'{path}/../json/daunesitzn.json', 'w') as f:
+            to_sitz = {
             'id' : f'{str(user.id)}',
             'guild': f'{str(ctx.guild.id)}',
             'timestamp': f'{str(datetime.now().timestamp())}'
             }
-            muted[f'{user}'] = to_mute
-            json.dump(muted, f, indent=4)
+            sitz[f'{user}'] = to_sitz
+            json.dump(sitz, f, indent=4)
         return
 
     @commands.command(name='wakeup',aliases=['wake'],brief='Try to wake user from mute xD',help='Moves Called member between afk and your Voice Channel like x number of times def is 5 \nonly works if user is connected to a Voice Channel\ncooldown=2 uses per 300sec')
@@ -212,6 +211,25 @@ class Führerbunker(commands.Cog):
                     print('member not connected to voice')
                     continue
                 with open (f'{path}/../json/hoizmeih.json', 'w') as f:
+                    content.pop(str(entry))
+                    json.dump(content, f, indent=4)
+    @tasks.loop(seconds=10)
+    async def undo_sitzn(self):
+        if self.bot._ready._value == False:
+            return
+        with open (f'{path}/../json/daunesitzn.json', 'r') as f:
+            content = json.load(f)
+        for entry in list(content):
+            user = content[str(entry)]
+            if (datetime.now().timestamp() -600) >= float(user['timestamp']):
+                member = self.bot.get_guild(int(user['guild'])).get_member(int(user['id']))
+                try:
+                    role = member.guild.get_role(818189474051653684)
+                    await member.remove_role(role)
+                except:
+                    print('member not connected to voice')
+                    continue
+                with open (f'{path}/../json/daunesitzn.json', 'w') as f:
                     content.pop(str(entry))
                     json.dump(content, f, indent=4)
 
