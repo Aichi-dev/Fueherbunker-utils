@@ -96,28 +96,50 @@ class Führerbunker(commands.Cog):
             muted[f'{user}'] = to_mute
             json.dump(muted, f, indent=4)
         return
-    @commands.command(name='DauneSitzn',aliases=['sitzen','sizn','daune'], brief='Mute Member for 30sec', help='Mute Member because he stinks bad LOL\nCooldown= 2 uses per 120sec')
-    @commands.cooldown(2,120,type=commands.BucketType.user)
+    @commands.command(name='DauneSitzn',aliases=['sitzen','sizn','daune'], brief='Kurz hinsetzen', help='Wenn Mal einer richtig meint und sich kurz hinsetzen soll!')
+    @commands.cooldown(1,600,type=commands.BucketType.user)
     async def DauneSitzn(self, ctx, user : discord.Member):
         if ctx.author == self.bot.user or ctx.guild == None:
             return
-        await ctx.channel.send(f'{user.mention} sitzt sich kurz daune!')
+        count = 0
+        hin_sitzten = False
         role = user.guild.get_role(818189474051653684)
-        await  user.add_roles(role)
-        try:
-            await user.edit(voice_channel=self.bot.get_channel(358623961854246912))
-        except:
-            pass
         with open (f'{path}/../json/daunesitzn.json', 'r') as f:
             sitz = json.load(f)
+            for entry in list(sitz):
+                cur = sitz[str(entry)]
+                if cur['id'] == str(user.id) and int(cur['count']) == 1:
+                    hin_sitzten = True
+                    count = cur['count']
+                    pass
+                elif cur['id'] == str(user.id) and int(cur['count']) >= 2:
+                    count = cur['count']
+                    await ctx.channel.send(f'{user.mention} Sitzt bereits!')
+                    return
         with open (f'{path}/../json/daunesitzn.json', 'w') as f:
+            count = int(count) +1
+            if user.voice != None:
+                VC = user.voice.channel.id
+            else:
+                VC = ctx.guild.afk_channel.id
             to_sitz = {
             'id' : f'{str(user.id)}',
+            'count' : f'{str(count)}',
             'guild': f'{str(ctx.guild.id)}',
+            'VC': f'{str(VC)}',
             'timestamp': f'{str(datetime.now().timestamp())}'
             }
             sitz[f'{user}'] = to_sitz
             json.dump(sitz, f, indent=4)
+        try:
+            if hin_sitzten == True:
+                await user.add_roles(role)
+                await user.edit(voice_channel=self.bot.get_channel(816772688780591145))
+                await ctx.channel.send(f'{user.mention} sitzt sich kurz daune!')
+            if hin_sitzten == False:
+                await ctx.channel.send(f'Ein weiterer Bunkerbewohner muss noch zustimmen.\nSend same command!')
+        except:
+            pass
         return
 
     @commands.command(name='wakeup',aliases=['wake'],brief='Try to wake user from mute xD',help='Moves Called member between afk and your Voice Channel like x number of times def is 5 \nonly works if user is connected to a Voice Channel\ncooldown=2 uses per 300sec')
@@ -221,21 +243,14 @@ class Führerbunker(commands.Cog):
             content = json.load(f)
         for entry in list(content):
             user = content[str(entry)]
-            if (datetime.now().timestamp() -600) >= float(user['timestamp']):
+            if (datetime.now().timestamp() -60) >= float(user['timestamp']):
                 member = self.bot.get_guild(int(user['guild'])).get_member(int(user['id']))
-                try:
-                    role = member.guild.get_role(818189474051653684)
-                    await member.remove_role(role)
-                except:
-                    print('member not connected to voice')
-                    continue
+                role = member.guild.get_role(818189474051653684)
+                if member.voice:
+                    await member.edit(voice_channel=self.bot.get_channel(int(user['VC'])))
+                await member.remove_roles(role)
                 with open (f'{path}/../json/daunesitzn.json', 'w') as f:
                     content.pop(str(entry))
                     json.dump(content, f, indent=4)
-
-
-
-
-
 def setup(bot):
     bot.add_cog(Führerbunker(bot))
